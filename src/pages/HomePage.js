@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
-import { CircularProgress , Typography, Container, Grid, Paper, Button} from '@mui/material';
+import { CircularProgress , Box, Typography, Container, Grid, Paper, Button} from '@mui/material';
 import ProductList from '../components/ProducList';
 //import CategoryTreeView from '../components/CategoryTreeView';
 import Header from '../components/Header';
@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ImageCarousel from '../components/ImageCarousel';
 import NavigationBox from '../components/NavigationBox';
+import Footer from '../components/Footer';
+
 
 
 // Importing images from src/images folder
@@ -127,9 +129,16 @@ const HomePage = () => {
       <div style={{margin:0, padding: 0 }}>
         <ImageCarousel images={images} interval={5000} />
       </div>
-      <div style={{margin:0, padding: 0 }}>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0, // Sticks to the top of the viewport
+          zIndex: 1000, // Ensures it's above other content
+          margin: '0px'
+          }}
+          >
         <NavigationBox />
-      </div>
+      </Box>
       <div>
         {(products.length>0) && <Typography variant='h5' sx={{ paddingX: 7, paddingY: 2, color: '#ff5f00', fontWeight: 'bold' }}>{t('TopSellingProducts')}</Typography>}
 
@@ -137,6 +146,9 @@ const HomePage = () => {
           ( <CircularProgress /> ) : ( <ProductList products={products} maxwd={200} onAddToBasket={handleAddToBasket} />)
         }
 
+      </div>
+      <div>
+        <Footer />
       </div>
     </div>
   );
