@@ -1,25 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
+import { TextField, Button, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import axios from '../api/axios';
 
 const ProductForm = ({ currentProduct, onSave, categories }) => {
   const [name, setName] = useState({ en: '', ar: '' });
   const [description, setDescription] = useState({ en: '', ar: '' });
-  const [price, setPrice] = useState('');
+  const [basePrice, setBasePrice] = useState('');
   const [image, setImage] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [topselling, setTopselling] = useState(false);
   const [imageFile, setImageFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [categoryId, setCategoryId] = useState('');
+  const [combos, setCombos] = useState([]);
+  const [newCombo, setNewCombo] = useState({
+    comboName: { en: '', ar: '' },
+    price: '',
+    description: { en: '', ar: '' },
+    image: '',
+    imageFile: null,
+    drinks: [],
+  });
+  const [extras, setExtras] = useState([]);
 
   useEffect(() => {
     if (currentProduct) {
       setName(currentProduct.name || { en: '', ar: '' });
       setDescription(currentProduct.description || { en: '', ar: '' });
-      setPrice(currentProduct.price || '');
+      setBasePrice(currentProduct.basePrice || '');
       setImage(currentProduct.image || '');
       setCategoryId(currentProduct.categoryId || '');
-      setTopselling(currentProduct.topselling || false);
+      setCombos(currentProduct.combos || []);
+      setExtras(currentProduct.extras || []);
     } else {
       resetForm();
     }
@@ -28,16 +37,16 @@ const ProductForm = ({ currentProduct, onSave, categories }) => {
   const resetForm = () => {
     setName({ en: '', ar: '' });
     setDescription({ en: '', ar: '' });
-    setPrice('');
+    setBasePrice('');
     setImage('');
     setCategoryId('');
-    setTopselling(false);
+    setCombos([]);
+    setExtras([]);
   };
 
   const handleImageUpload = async () => {
     if (!imageFile) return;
 
-    setUploading(true);
     const formData = new FormData();
     formData.append('image', imageFile);
 
@@ -48,24 +57,48 @@ const ProductForm = ({ currentProduct, onSave, categories }) => {
       setImage(res.data.imageUrl);
     } catch (error) {
       console.error('Image upload failed:', error);
-    } finally {
-      setUploading(false);
     }
+  };
+
+  const handleComboImageUpload = async (comboIndex) => {
+    const combo = combos[comboIndex];
+    if (!combo.imageFile) return;
+
+    const formData = new FormData();
+    formData.append('image', combo.imageFile);
+
+    try {
+      const res = await axios.post('/api/products/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const updatedCombos = [...combos];
+      updatedCombos[comboIndex].image = res.data.imageUrl;
+      setCombos(updatedCombos);
+    } catch (error) {
+      console.error('Combo image upload failed:', error);
+    }
+  };
+
+  const handleAddCombo = () => {
+    setCombos([...combos, newCombo]);
+    setNewCombo({
+      comboName: { en: '', ar: '' },
+      price: '',
+      description: { en: '', ar: '' },
+      image: '',
+      imageFile: null,
+      drinks: [],
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const productData = { name, description, price, image, categoryId, topselling };
-    if (!currentProduct) {
-      productData.createdAt = new Date();
-    }
-
+    const productData = { name, description, basePrice, image, categoryId, combos, extras };
     if (currentProduct) {
       await axios.put(`/api/products/${currentProduct._id}`, productData);
     } else {
       await axios.post('/api/products', productData);
     }
-
     onSave();
   };
 
@@ -74,8 +107,6 @@ const ProductForm = ({ currentProduct, onSave, categories }) => {
       <TextField
         label="Name (English)"
         value={name.en}
-        variant="filled"
-        size="small"
         onChange={(e) => setName({ ...name, en: e.target.value })}
         fullWidth
         required
@@ -83,18 +114,32 @@ const ProductForm = ({ currentProduct, onSave, categories }) => {
       <TextField
         label="Name (Arabic)"
         value={name.ar}
-        variant="filled"
-        size="small"
         onChange={(e) => setName({ ...name, ar: e.target.value })}
         fullWidth
         required
       />
       <TextField
-        label="Price"
-        value={price}
-        variant="filled"
-        size="small"
-        onChange={(e) => setPrice(e.target.value)}
+        label="Description (English)"
+        value={description.en}
+        onChange={(e) => setDescription({ ...description, en: e.target.value })}
+        fullWidth
+        multiline
+        rows={3}
+        required
+      />
+      <TextField
+        label="Description (Arabic)"
+        value={description.ar}
+        onChange={(e) => setDescription({ ...description, ar: e.target.value })}
+        fullWidth
+        multiline
+        rows={3}
+        required
+      />
+      <TextField
+        label="Base Price"
+        value={basePrice}
+        onChange={(e) => setBasePrice(e.target.value)}
         fullWidth
         required
       />
@@ -103,66 +148,125 @@ const ProductForm = ({ currentProduct, onSave, categories }) => {
         onClick={handleImageUpload}
         variant="contained"
         color="primary"
-        disabled={uploading || !imageFile}
-        fullWidth
+        disabled={!imageFile}
       >
-        {uploading ? 'Uploading...' : 'Upload Image'}
+        Upload Product Image
       </Button>
       <TextField
         label="Image URL"
         value={image}
-        variant="filled"
-        size="small"
         onChange={(e) => setImage(e.target.value)}
         fullWidth
-      />
-      <TextField
-        label="Description (English)"
-        value={description.en}
-        variant="filled"
-        size="small"
-        onChange={(e) => setDescription({ ...description, en: e.target.value })}
-        fullWidth
-        multiline
-        rows={3}
-      />
-      <TextField
-        label="Description (Arabic)"
-        value={description.ar}
-        variant="filled"
-        size="small"
-        onChange={(e) => setDescription({ ...description, ar: e.target.value })}
-        fullWidth
-        multiline
-        rows={3}
-      />
-      <TextField
-        select
-        label="Category"
-        value={categoryId}
-        variant="filled"
-        size="small"
-        onChange={(e) => setCategoryId(e.target.value)}
-        fullWidth
         required
-      >
-        {categories.map((category) => (
-          <MenuItem key={category._id} value={category._id}>
-            {category.name.en}
-          </MenuItem>
-        ))}
-      </TextField>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={topselling}
-            onChange={(e) => setTopselling(e.target.checked)}
-            color="primary"
-          />
-        }
-        label="Top Selling"
       />
-      <Button type="submit" variant="contained" color="secondary" fullWidth>
+      <FormControl fullWidth>
+        <InputLabel>Category</InputLabel>
+        <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+          {categories.map((category) => (
+            <MenuItem key={category._id} value={category._id}>
+              {category.name.en}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <div>
+        <h4>Combos</h4>
+        {combos.map((combo, index) => (
+          <div key={index}>
+            <TextField
+              label="Combo Name (English)"
+              value={combo.comboName.en}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].comboName.en = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Combo Name (Arabic)"
+              value={combo.comboName.ar}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].comboName.ar = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Combo Description (English)"
+              value={combo.description.en}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].description.en = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              multiline
+              rows={2}
+              required
+            />
+            <TextField
+              label="Combo Description (Arabic)"
+              value={combo.description.ar}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].description.ar = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              multiline
+              rows={2}
+              required
+            />
+            <TextField
+              label="Combo Price"
+              value={combo.price}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].price = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              required
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].imageFile = e.target.files[0];
+                setCombos(updatedCombos);
+              }}
+            />
+            <Button
+              onClick={() => handleComboImageUpload(index)}
+              variant="contained"
+              color="primary"
+              disabled={!combo.imageFile}
+            >
+              Upload Combo Image
+            </Button>
+            <TextField
+              label="Combo Image URL"
+              value={combo.image}
+              onChange={(e) => {
+                const updatedCombos = [...combos];
+                updatedCombos[index].image = e.target.value;
+                setCombos(updatedCombos);
+              }}
+              fullWidth
+              required
+            />
+          </div>
+        ))}
+        <Button onClick={handleAddCombo} variant="contained" color="secondary">
+          Add Combo
+        </Button>
+      </div>
+      <Button type="submit" variant="contained" color="primary" fullWidth>
         {currentProduct ? 'Update Product' : 'Add Product'}
       </Button>
     </form>
