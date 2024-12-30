@@ -25,7 +25,7 @@ const HomePage = () => {
   const { t, i18n } = useTranslation();  // Initialize translation
   
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  //const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isNewProduct,setIsNewProduct] = useState(true);
   const [basketCount, setBasketCount] = useState(0);
@@ -68,20 +68,7 @@ const HomePage = () => {
     fetchProducts();
   }, []);
   
- // Fetch categories and subcategories from the backend
- useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get('/api/categories');
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  fetchCategories();
-}, []);
-
+ 
   const handleSearch = async (searchTerm) => {
     setLoading(true);
     (isNewProduct) && setIsNewProduct(false);

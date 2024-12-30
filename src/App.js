@@ -16,6 +16,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import BasketPage from './pages/BasketPage';
 import LandingPage from './pages/LandingPage';
+import MenuPage from './pages/MenuPage';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Routes>
           {/*<Route path="/" element={<LandingPage />} />*/} {/* Landing page route */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/menu" element={<MenuPage />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route path="/manage-categories" element={<CategoryManagementPage />} /> {/* Add the route */}
           <Route path="/manage-subcategories" element={<SubcategoryManagementPage />} /> {/* Add the route */}

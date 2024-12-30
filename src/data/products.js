@@ -893,8 +893,30 @@ const myproducts= [
   },
   "image": "https://res.cloudinary.com/djezf7wtn/image/upload/v1735411306/products/BlueberryCheesecake.jpg",
   "basePrice": 75,
-  "productType": "Dessert",
+  "productType": "dessert",
   "categoryId": { "$oid" : "670a5758b19cb207af187600"},
+  "topselling": true,
+  "sizes": [],
+  "breadTypes": [],
+  "combos": [],
+  "extras": [],
+  "createdAt": "2024-12-23T19:30:44.578+00:00"
+},
+/* 7th */
+{
+  "_id": {"$oid" : "67710a5325f6e31c6fa7a981"},
+  "name": {
+    "en": "V Cola",
+    "ar": "ڤي كولا"
+  },
+  "description": {
+    "en": "V Cola",
+    "ar": "ڤي كولا"
+  },
+  "image": "https://res.cloudinary.com/djezf7wtn/image/upload/v1735462179/products/vcola.jpg",
+  "basePrice": 25 ,
+  "productType": "drink",
+  "categoryId": { "$oid" : "671352fd94f5de770deb2b88"},
   "topselling": true,
   "sizes": [],
   "breadTypes": [],

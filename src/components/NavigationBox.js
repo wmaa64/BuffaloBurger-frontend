@@ -18,11 +18,12 @@ import drinksImg from '../images/drinks.jpg';
 
 const NavigationBox = () => {
   const navigate = useNavigate();
+  const categories = ['Offers','Burger','Chiken','Kito','Appetizers','Sauces','Dessert','Drinks'];
 
-  const handleNavigation = (path) => {
-    navigate(path);
+  const handleNavigation = (categoryName) => {
+    navigate(`/menu#${categoryName}`);
   };
-
+  
   return (
     <Box
       sx={{
@@ -37,7 +38,7 @@ const NavigationBox = () => {
     >
         {/* Offers */}
         <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[0])}
         >
             <Box    
                 component="img"
@@ -52,7 +53,7 @@ const NavigationBox = () => {
 
        {/* burger */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[1])}
         >
             <Box    
                 component="img"
@@ -67,7 +68,7 @@ const NavigationBox = () => {
 
        {/* chicken */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[2])}
         >
             <Box    
                 component="img"
@@ -82,7 +83,7 @@ const NavigationBox = () => {
 
        {/* keto */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[3])}
         >
             <Box   
                 component="img"
@@ -97,7 +98,7 @@ const NavigationBox = () => {
 
        {/* appetizers */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[4])}
         >
             <Box  
                 component="img"
@@ -112,7 +113,7 @@ const NavigationBox = () => {
 
        {/* sauces */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[5])}
         >
             <Box  
                 component="img"
@@ -127,7 +128,7 @@ const NavigationBox = () => {
 
        {/* kidsmeal */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[6])}
         >
             <Box  
                 component="img"
@@ -142,7 +143,7 @@ const NavigationBox = () => {
 
        {/* dessert */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[7])}
         >
             <Box  
                 component="img"
@@ -157,7 +158,7 @@ const NavigationBox = () => {
 
        {/* drinks */}
        <IconButton
-            onClick={() => handleNavigation('/login')}
+            onClick={() => handleNavigation(categories[8])}
         >
             <Box  
                 component="img"
