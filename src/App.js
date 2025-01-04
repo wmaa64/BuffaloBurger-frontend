@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import ProductDetailsPage from './pages/ProductDetailsPage';
+import ProductSelectionPage from './pages/ProductSelectionPage';
+//import ProductDetailsPage from './pages/ProductDetailsPage';
 import CategoryManagementPage from './pages/CategoryManagementPage';
 import SubcategoryManagementPage from './pages/SubcategoryManagementPage';
 import ProductManagementPage from './pages/ProductManagementPage';
@@ -45,7 +46,8 @@ function App() {
           {/*<Route path="/" element={<LandingPage />} />*/} {/* Landing page route */}
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
-          <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/product/:id" element={<ProductSelectionPage />} />
+          {/*<Route path="/product/:id" element={<ProductDetailsPage />} /> */}
           <Route path="/manage-categories" element={<CategoryManagementPage />} /> {/* Add the route */}
           <Route path="/manage-subcategories" element={<SubcategoryManagementPage />} /> {/* Add the route */}
           <Route path="/manage-products" element={<ProductManagementPage />} /> {/* Add the route */}

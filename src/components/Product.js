@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link  } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, IconButton, Badge } from '@mui/material';
 import AddShoppingCartIcon  from '@mui/icons-material/AddShoppingCart';
 //import { useNavigate } from 'react-router-dom';
 
-const Product = ({ product, maxwd, onAddProductToBasket }) => {
+const Product = ({ product, maxwd, maxhi, onAddProductToBasket }) => {
   const [basketQuantity, setBasketQuantity] = useState(0);
 
   //const navigate = useNavigate();
@@ -28,15 +28,15 @@ const Product = ({ product, maxwd, onAddProductToBasket }) => {
     onAddProductToBasket(product._id);
     setBasketQuantity(prev => prev+1);
   }
-
+  
   return (
-    <Card sx={{maxWidth: maxwd }}>
+    <Card sx={{ width: '100%', margin: 'auto' }}>
       <Link to={`/product/${product._id}`}  >
         <CardMedia 
-            component="img"
+            component="img" 
             image={product.image}
             alt={product.name.en}
-            sx={{ height: maxwd, objectFit: 'cover' }}
+            sx={{ width: maxwd , height: maxhi , objectFit: 'cover' }}
           />
       </Link>
       <CardContent>

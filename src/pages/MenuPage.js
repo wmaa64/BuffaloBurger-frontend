@@ -88,7 +88,11 @@ const MenuPage = () => {
               }, fontWeight: 'bold' , textAlign: 'center' ,color: '#ff5f00', marginBottom: 2 }}>
               {category.name.en}
             </Typography>
-            <ProductList products={category.products} maxwd={200} onAddToBasket={handleAddToBasket} />
+            {(category.name.en === 'Offers')? 
+            <ProductList products={category.products} maxwd={270} maxhi={300} onAddToBasket={handleAddToBasket} />:
+            <ProductList products={category.products} maxwd={200} maxhi={200} onAddToBasket={handleAddToBasket} />
+            }
+            
 
           </Box>
         ))}

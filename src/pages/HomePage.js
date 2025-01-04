@@ -130,7 +130,7 @@ const HomePage = () => {
         {(products.length>0) && <Typography variant='h5' sx={{ paddingX: 7, paddingY: 2, color: '#ff5f00', fontWeight: 'bold' }}>{t('TopSellingProducts')}</Typography>}
 
         {(loading) ? 
-          ( <CircularProgress /> ) : ( <ProductList products={products} maxwd={200} onAddToBasket={handleAddToBasket} />)
+          ( <CircularProgress /> ) : ( <ProductList products={products} maxwd={200} maxhi={200} onAddToBasket={handleAddToBasket} />)
         }
 
       </div>
