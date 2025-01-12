@@ -44,7 +44,12 @@ const HomePage = () => {
   const userInfo = localStorage.getItem('userInfo') 
   ? JSON.parse(localStorage.getItem('userInfo')) : null ;
 
-    
+  useEffect(() => {
+    const basketItems = JSON.parse(localStorage.getItem('basketItems')) || [];
+    setBasketCount(basketItems.length); // Set the basket count to the number of items in the basket
+  }, []);
+
+  /*
   // Fetch the basket count when user logs in
   useEffect(() => {
     const basketItems = JSON.parse(localStorage.getItem('basketItems'));
@@ -53,6 +58,7 @@ const HomePage = () => {
     }
   }, [basketCount]);
 
+*/
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -68,7 +74,7 @@ const HomePage = () => {
     fetchProducts();
   }, []);
   
- 
+/* 
   const handleSearch = async (searchTerm) => {
     setLoading(true);
     (isNewProduct) && setIsNewProduct(false);
@@ -80,7 +86,9 @@ const HomePage = () => {
     }
     setLoading(false);
 };
+*/
 
+/*
  // Function to add a product to the basket
  const handleAddToBasket = async (productId) => {
   const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
@@ -108,10 +116,12 @@ const HomePage = () => {
   }
 };
 
+*/
+
   return (
     <div>
       <div style={{margin:0, padding:0}}>
-        <Header  currentBasketCount={basketCount} onSearch={handleSearch}  />
+        <Header  currentBasketCount={basketCount} />
       </div>
       <div style={{margin:0, padding: 0 }}>
         <ImageCarousel images={images} interval={5000} />
@@ -130,7 +140,7 @@ const HomePage = () => {
         {(products.length>0) && <Typography variant='h5' sx={{ paddingX: 7, paddingY: 2, color: '#ff5f00', fontWeight: 'bold' }}>{t('TopSellingProducts')}</Typography>}
 
         {(loading) ? 
-          ( <CircularProgress /> ) : ( <ProductList products={products} maxwd={200} maxhi={200} onAddToBasket={handleAddToBasket} />)
+          ( <CircularProgress /> ) : ( <ProductList products={products} maxwd={200} maxhi={200}  />)
         }
 
       </div>

@@ -80,9 +80,7 @@ const Header = ({ currentBasketCount, onSearch }) => {
     }
 
     const goToBasket = () => {
-      if (userInfo){ 
-        navigate(`/basket/${userInfo._id}`); // Navigate to the basket page
-      }
+        navigate('/basket'); // Navigate to the basket page
     };    
 
     return (
@@ -113,16 +111,15 @@ const Header = ({ currentBasketCount, onSearch }) => {
               </IconButton>
             </Box>
 
-            {/* Center Section */}
-            <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>
-              {/* Icon */}
-              <Box
-                component="img"
-                src={logoImage}
-                alt="icon"
-                sx={{ width: 200 , height: 60 }}
-              />
-            </Typography>
+            {/* Center Section */}{/* Icon */}
+              <IconButton color="inherit" onClick={() => navigate('/')} title="Go to Home" >
+                <Box 
+                  component="img"
+                  src={logoImage}
+                  alt="icon"
+                  sx={{ width: 200 , height: 60 }}
+                />
+              </IconButton>
 
             {/* Right Section */}
             <Box sx={{ display: 'flex', gap: 2 }}>

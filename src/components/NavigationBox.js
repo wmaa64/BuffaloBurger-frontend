@@ -18,7 +18,7 @@ import drinksImg from '../images/drinks.jpg';
 
 const NavigationBox = () => {
   const navigate = useNavigate();
-  const categories = ['Offers','Burger','Chiken','Kito','Appetizers','Sauces','Dessert','Drinks'];
+  const categories = ['Offers','Burger','Chicken','Kito','Appetizers','Sauces','Dessert','Drinks'];
 
   const handleNavigation = (categoryName) => {
     navigate(`/menu#${categoryName}`);
@@ -126,24 +126,9 @@ const NavigationBox = () => {
             />
         </IconButton>
 
-       {/* kidsmeal */}
-       <IconButton
-            onClick={() => handleNavigation(categories[6])}
-        >
-            <Box  
-                component="img"
-                src={kidsmealImg}
-                alt='Offers'
-                sx={{
-                width: 80,
-                height: 80,
-                }}
-            />
-        </IconButton>
-
        {/* dessert */}
        <IconButton
-            onClick={() => handleNavigation(categories[7])}
+            onClick={() => handleNavigation(categories[6])}
         >
             <Box  
                 component="img"
@@ -158,12 +143,12 @@ const NavigationBox = () => {
 
        {/* drinks */}
        <IconButton
-            onClick={() => handleNavigation(categories[8])}
+            onClick={() => handleNavigation(categories[7])}
         >
             <Box  
                 component="img"
                 src={drinksImg}
-                alt='Offers'
+                alt='Drinks'
                 sx={{
                 width: 80,
                 height: 80,

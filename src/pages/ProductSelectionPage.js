@@ -17,6 +17,10 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [total, setTotal] = useState(0);
 
+  useEffect(() => {
+    const basketItems = JSON.parse(localStorage.getItem('basketItems')) || [];
+    setBasketCount(basketItems.length); // Set the basket count to the number of items in the basket
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,33 +42,96 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
     return <CircularProgress />;
   }
 
-  const handleExtrasChange = (event) => {
+  
+
+  const handleSizeChange = (event, size) => {
+    // Remove the previous size price if any
+    if (selectedSize) {
+      setTotal((prevTotal) => prevTotal - selectedSize.price);
+    }
+
+    // Add the new size price
+    setTotal((prevTotal) => prevTotal + size.price);
+
+    // Update selected size
+    setSelectedSize(size);
+  };
+
+  const handleBreadChange = (event, bread) => {
+    // Remove the previous bread price if any
+    if (selectedBread) {
+      setTotal((prevTotal) => prevTotal - selectedBread.price);
+    }
+
+    // Add the new size price
+    setTotal((prevTotal) => prevTotal + bread.price);
+
+    // Update selected size
+    setSelectedBread(bread);
+  };
+
+  const handleComboChange = (event, combo) => {
+    // Remove the previous bread price if any
+    if (selectedCombo) {
+      setTotal((prevTotal) => prevTotal - selectedCombo.price);
+    }
+
+    // Add the new size price
+    setTotal((prevTotal) => prevTotal + combo.price);
+
+    // Update selected size
+    setSelectedDrink(null);
+    setSelectedCombo(combo);
+  };
+
+  const handleExtrasChange = (event, extra) => {
     const { value, checked } = event.target;
     if (checked) {
       // Add to selectedExtras if checked
       setSelectedExtras((prev) => [...prev, value]);
+      setTotal((prev) => prev + extra.price);
     } else {
       // Remove from selectedExtras if unchecked
       setSelectedExtras((prev) => prev.filter((extra) => extra !== value));
+      setTotal((prev) => prev - extra.price);
     }
   };
 
   const handleAddToBasket = () => {
     const selectedOptions = {
       productId: product._id,
-      size: selectedSize,
-      breadType: selectedBread,
+      name:{ en: product.name.en, ar: product.name.ar},
+      image: product.image,
+      productType: product.productType,
+      size: { en: selectedSize.size.en  , ar: selectedSize.size.ar },
+      breadType: { en: selectedBread.breadType.en, ar: selectedBread.breadType.ar },
       combo: selectedCombo,
-      drink: selectedDrink,
-      extraSandwich: selectedExtras,
+      comboDrink: selectedDrink,
+      extras: selectedExtras,
+      quantity: 1,
+      Price: total,
+      totalPrice: total,
     };
-    onAddToBasket(selectedOptions);
-  };
+  
+    // Retrieve existing basket items from localStorage
+    const existingBasket = JSON.parse(localStorage.getItem('basketItems')) || [];
+    
+    // Add new item to the basket
+    const updatedBasket = [...existingBasket, selectedOptions];
+  
+    // Save updated basket back to localStorage
+    localStorage.setItem('basketItems', JSON.stringify(updatedBasket));
 
+    setBasketCount(updatedBasket.length); // Set the basket count to the number of items in the basket
+  
+    alert('Item added to the basket!');
+  };
+  
+  
   return (
 <Box>
     <div style={{margin:0, padding:0}}>
-    <Header  currentBasketCount={basketCount}  />
+        <Header  currentBasketCount={basketCount}  />
     </div>
 
     <Box
@@ -109,8 +176,11 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
                 
                 <RadioGroup
                     row
-                    value={selectedSize}
-                    onChange={(e) => setSelectedSize(e.target.value)}
+                    value={selectedSize ? selectedSize.size.en : ( setSelectedSize(product.sizes[0] || '')) }
+                    onChange={(e) => {
+                        const size = product.sizes.find((s) => s.size.en === e.target.value );
+                        handleSizeChange(e,size);
+                    }}
                 >
                     {product.sizes.map((size, index) => (
                     <FormControlLabel
@@ -143,8 +213,11 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
             <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Bread</Typography>
             <RadioGroup
                 row
-                value={selectedBread}
-                onChange={(e) => setSelectedBread(e.target.value)}
+                value={selectedBread ? selectedBread.breadType.en : ( setSelectedBread(product.breadTypes[0] || '') ) }
+                onChange={(e) => {
+                    const bread = product.breadTypes.find((b) => b.breadType.en === e.target.value  );
+                    handleBreadChange(e, bread);
+                }}
             >
                 {product.breadTypes.map((bread, index) => (
                 <FormControlLabel
@@ -169,37 +242,76 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
         }}
         >
 
-            {/* Combos */}
-            {product.combos && (
-                <FormControl>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Combo Options</Typography>
-                <RadioGroup
-                    row
-                    value={selectedCombo}
-                    onChange={(e) => setSelectedCombo(e.target.value)}
-                >
-                    <Grid container spacing={2} sx={{ paddingX: '10%'}} >
-                        {product.combos.map((combo, index) => (
-                        <Grid item xs={6} key={index}  > {/* xs={6} makes 2 items per row */}
-                            <FormControlLabel
-                                key={index}
-                                value={combo.comboName.en}
-                                control={<Radio sx={{ color: '#ff5f00' , 
-                                            '&.Mui-checked': { color: '#ff5f00'} }}  />}
-                                label={ 
-                                    <Box>
-                                        <Typography variant='body1' fontWeight='bold' >{combo.comboName.en}</Typography>
-                                        <Typography variant='body2' color='grey' >{`${combo.description.en}`}</Typography>
-                                    </Box>
-                                    }
-                                sx={{ paddingX: '10%'}}
-                            />
-                            
-                        </Grid>
-                        ))}
+        {/* Combos */}
+        {product.combos && (
+            <FormControl>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Combo Options</Typography>
+            <RadioGroup
+                row
+                value={selectedCombo ? selectedCombo.comboName.en : ( setSelectedCombo( product.combos[0] || '') ) }
+                onChange={(e) => {
+                    const combo = product.combos.find( (c) => c.comboName.en === e.target.value);
+                    handleComboChange(e,combo);
+                }}
+            >
+                <Grid container spacing={2} sx={{ paddingX: '10%'}} >
+                    {product.combos.map((combo, index) => (
+                    <Grid item xs={6} key={index}  > {/* xs={6} makes 2 items per row */}
+                        <FormControlLabel
+                            key={index}
+                            value={combo.comboName.en}
+                            control={<Radio sx={{ color: '#ff5f00' , 
+                                        '&.Mui-checked': { color: '#ff5f00'} }}  />}
+                            label={ 
+                                <Box>
+                                    <Typography variant='body1' fontWeight='bold' >{combo.comboName.en}</Typography>
+                                    <Typography variant='body2' color='grey' >{`${combo.description.en}`}</Typography>
+                                </Box>
+                                }
+                            sx={{ paddingX: '10%'}}
+                        />
+                        
                     </Grid>
-                </RadioGroup>
-                </FormControl>
+                    ))}
+                </Grid>
+            </RadioGroup>
+            </FormControl>
+        )}
+    </Box>
+
+    <Box
+        sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative'
+        }}
+        >
+            {/* Combo Drinks */}
+            {(selectedCombo &&
+                (selectedCombo.includesDrink && (
+                    <FormControl>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >DRINKS</Typography>
+                    
+                    <RadioGroup
+                        row
+                        value={selectedDrink}
+                        onChange={(e) => setSelectedDrink(e.target.value) }
+                    >
+                        { selectedCombo.drinkOptions.map((drink, index) => (
+                        <FormControlLabel
+                            key={index}
+                            value={drink.en}
+                            control={<Radio sx={{ color: '#ff5f00' , 
+                                                '&.Mui-checked': { color: '#ff5f00'} }}  />}
+                            label={drink.en}
+                        />
+                        ))}
+                    </RadioGroup>
+                    
+
+                    </FormControl>
+                ))
             )}
     </Box>
 
@@ -226,7 +338,7 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
                                 value={extra.extraName.en}
                                 control={<Checkbox
                                     value={extra.extraName.en}
-                                    onChange={handleExtrasChange}
+                                    onChange={(e) => handleExtrasChange(e, extra)}
                                     sx={{ color: '#ff5f00' , 
                                         '&.Mui-checked': { color: '#ff5f00'} }}  
                                 />}

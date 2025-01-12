@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Typography, Grid, Paper, IconButton, Card, CardMedia, CardContent, CardActions } from '@mui/material';
+import { Button, Typography, Grid, Box, IconButton, Card, CardMedia, CardContent, CardActions } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from '../api/axios';
 import { useParams } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 const BasketPage = ({maxwd}) => {
-  const { userId } = useParams();
-
   const [basketItems, setBasketItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [basketTotalPrice, setBasketTotalPrice] = useState(0);
 
+  useEffect(() => {
+    const itemsInBasket = JSON.parse(localStorage.getItem('basketItems')) || [];
+    console.log('Basket Items:', itemsInBasket);
+    setBasketItems(itemsInBasket); // Set the basketitems of items in the basket
+    calculateTotalPrice(itemsInBasket);
+  }, []);
+
+/*
   useEffect(() => {
     // Fetch basket items for the logged-in user
     const fetchBasketItems = async () => {
@@ -24,38 +31,33 @@ const BasketPage = ({maxwd}) => {
 
     fetchBasketItems();
   }, [userId]);
+*/
 
   const calculateTotalPrice = (items) => {
-    const total = items.reduce((sum, item) => sum + item.productId.price * item.quantity, 0); // 'productId' references Product
-    setTotalPrice(total);
+    const total = items.reduce((sum, item) => sum + item.totalPrice, 0); // 'productId' references Product
+    setBasketTotalPrice(total);
   };
 
-  const handleRemoveItem = async (productId) => {
-    try {
-      const response = await axios.delete(`/api/basket/remove/${userId}/${productId}`);
-      setBasketItems(response.data.items); // Updated after removing the item
-      calculateTotalPrice(response.data.items);
-    } catch (error) {
-      console.error('Error removing item:', error);
-    }
+
+  const handleRemoveItem = (id) => {
+    const updatedBasket = basketItems.filter(item => item.productId != id) ;
+    // Save updated basket back to localStorage
+    localStorage.setItem('basketItems', JSON.stringify(updatedBasket));
+
+    setBasketItems(updatedBasket);
+
+    calculateTotalPrice(updatedBasket);
   };
 
-  const handleDeleteUserBasket = async (userId) => {
-    try {
-        await axios.delete(`/api/basket/${userId}`);
-  
+  const handleDeleteUserBasket = () => {
         // Clear the local basket state
         localStorage.removeItem('basketItems');
         setBasketItems([]);
-        setTotalPrice(0);
+        setBasketTotalPrice(0);
         alert('User basket cleared successfully!');
-    } catch (error) {
-      console.error('Error Deleting User Basket:', error);
-      alert('Error Deleting User Basket');
-    }
   };
 
-
+/*
   const handlePlaceOrder = async () => {
     try {
       const response = await axios.post(`/api/orders`, {
@@ -100,54 +102,176 @@ const BasketPage = ({maxwd}) => {
       alert('Error initiating payment.');
     }
   };
-  
+*/  
+
+const updateQuantity = (productId, newQuantity) => {
+  const updatedBasket = basketItems.map((item) => 
+    (item.productId === productId) ? { ...item, quantity: newQuantity, totalPrice: newQuantity * item.Price } : item
+  );
+
+  setBasketItems(updatedBasket);
+  calculateTotalPrice(updatedBasket)
+  localStorage.setItem('basketItems', JSON.stringify(updatedBasket));
+
+};
+
+const withOutPrice = (str) => {
+  const end = str.indexOf("(");
+  return str.substring(0,end);
+};
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6} md={4} > 
-            <Typography variant="h5">Your Basket</Typography>
+
+  <Box sx={{ display: 'flex', flexDirection: 'row', padding: 1, gap: 1 }}>
+
+    {/* Left Section: Grid for Basket Items */}
+    <Box sx={{ flex: 4 }}>
+      <Typography variant="h5" sx={{ marginBottom: '20px'}} >Your Basket</Typography>
+
+      {/* Header Row */}
+      <Grid container spacing={2} sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1, marginBottom: 2 }}>
+
+        <Grid item xs={1}>
+          <Typography variant="subtitle1" fontWeight="bold">Card#</Typography>
+        </Grid>
+        <Grid item xs={5}>
+          <Typography variant="subtitle1" fontWeight="bold">Card</Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <Typography variant="subtitle1" fontWeight="bold">Quantity</Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <Typography variant="subtitle1" fontWeight="bold">Price (EGP)</Typography>
+        </Grid>
       </Grid>
-      <Grid item xs={12} sm={6} md={12} > 
-        <Paper elevation={4} sx={{ padding: 2, height: 'auto' }}>
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} >
-                {basketItems.length === 0 ? (
-                    <Typography variant="body1">Your basket is empty.</Typography>
-                ) : (
-                    basketItems.map((item) => (
-                    
-                        <Card key={item.productId._id} sx={{maxWidth: maxwd }}>
-                            <CardMedia 
-                                component="img"
-                                image={item.productId.image}
-                                alt={item.productId.name}
-                                sx={{ height: maxwd, objectFit: 'cover' }}
-                            />
-                            <CardContent>
-                                <Typography variant="subtitle2">{item.productId.name}</Typography>
-                                <Typography variant="subtitle2">Price: EGP {item.productId.price}</Typography>
-                                <Typography variant="subtitle2">Quantity: {item.quantity}</Typography>
-                            </CardContent>
-                            <CardActions>
-                                <IconButton color="secondary" onClick={() => handleRemoveItem(item.productId._id)} >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </CardActions>
-                        </Card>
-                    
-                    ))
-                )}
+
+      {/* Basket Items */}
+      {basketItems.map((item, index) => (
+        <Grid container spacing={2} key={item.productId} sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1, marginBottom: 2 }}>
+          <Grid item xs={1}>
+            <Typography variant="body2">{index + 1}</Typography>
+          </Grid>
+          <Grid item xs={5} >
+            <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'left',
+                            alignItems: 'center',
+                            position: 'relative'
+                        }}
+                        >
+
+             <div style={{ marginRight: '20px' }}>
+                <Box    
+                    component="img"
+                    src={item.image}
+                    alt={item.productId}
+                    sx={{ 
+                    width: 120,
+                    height: 120,
+                    }}
+                />
             </div>
-        </Paper>
-      </Grid>
-      
-      <Grid item xs={12}>
-        <Typography variant="h5">Total: EGP {totalPrice.toFixed(2)}</Typography>
-        <Button variant="contained" color="primary" onClick={handlePlaceOrder}>
-          Place Order
-        </Button>
-      </Grid>
-    </Grid>
+            <div>
+                <Typography variant="subtitle2" sx={{ width: '100%' , color: '#ff5f00' , fontWeight: 'bold' }} >
+                  {item.name.en}</Typography>
+                <Typography variant="subtitle2" sx={{ width: '100%'  }} >
+                  {withOutPrice(item.combo.description.en)}</Typography>
+                <Typography variant="subtitle2" sx={{ width: '100%'  }} >
+                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink) : ''} 
+                </Typography>
+                
+                {item.extras.map((extra, index) => (
+                    <Typography variant="subtitle2" sx={{ width: '100%'  }} >{withOutPrice(extra)}, </Typography>
+                ))}
+            </div>
+            </Box>
+            <IconButton color="secondary" onClick={() => handleRemoveItem(item.productId)} title='Remove Item From Basket'>
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+
+          <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+            <IconButton
+              size="small"
+              color='black'
+              onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+              disabled={item.quantity <= 1} // Disable if quantity is 1
+              sx={{
+                border: '1px solid black',
+                borderRadius: '50%',
+                padding: 0.5,
+                width: '20px',
+                height: '20px',
+              }}
+            >
+              <RemoveIcon fontSize="small" />
+            </IconButton>
+            <Typography variant="body2" sx={{ marginX: 2 }}>
+              {item.quantity}
+            </Typography>
+            <IconButton
+              size="small"
+              color='#ff5f00'
+              onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+              sx={{
+                border: '1px solid #ff5f00',
+                borderRadius: '50%',
+                padding: 0.5,
+                width: '20px',
+                height: '20px',
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center',}} >
+            <Typography variant="subtitle2" sx={{ width: '100%'  }} >{item.totalPrice}</Typography>
+          </Grid>
+
+        </Grid>
+)
+      )}
+    </Box>
+
+    {/* Right Section: Total Price and Place Order */}
+    <Box
+        sx={{
+          height: '100vh',
+          flex: 1,
+          border: '1px solid #ccc',
+          borderRadius: 2,
+          backgroundColor: '#f9f9f9',
+        }}
+      >
+        <Typography variant='body1' sx={{ fontWeight: 'bold' , color: '#ff5f00' , paddingX: '10px' }}>Basket Summary</Typography>
+        <Box
+          sx={{
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'space-between', // Space out items to the left and right
+            alignItems: 'top', // Vertically align items
+            paddingY: 1,
+            paddingX: 2,  
+          }}
+        >
+            <Typography variant='body1' sx={{ fontWeight: 'bold' , color: '#ff5f00'}}>Total</Typography>
+            <Typography variant='body1' sx={{ fontWeight: 'bold' , color: '#ff5f00'}}>EGP {basketTotalPrice.toFixed(2)}</Typography>
+        </Box>
+        
+          <Button variant="contained" color="primary" title='Place Order' 
+            sx={{ position: 'sticky' , bottom: '0' , width: '100%' , backgroundColor: '#ff5f00' ,
+            '&:hover': {backgroundColor: '#ff5f00'}
+            }} >
+            Place Order
+          </Button>
+
+
+    </Box>
+  
+</Box>
   );
 };
 
 export default BasketPage;
+

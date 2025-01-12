@@ -29,15 +29,20 @@ const MenuPage = () => {
   }, []);
 
   useEffect(() => {
-    // Scroll to the category if a hash is present in the URL
-    if (location.hash) {
+    const basketItems = JSON.parse(localStorage.getItem('basketItems')) || [];
+    setBasketCount(basketItems.length); // Set the basket count to the number of items in the basket
+  }, []);
+
+  useEffect(() => {
+     // Scroll to the category if a hash is present in the URL and categories are loaded
+  if (location.hash && categories.length > 0) {
       const categoryId = location.hash.substring(1);
       const element = document.getElementById(categoryId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [location]);
+  }, [location, categories]);
 
  // Function to add a product to the basket
  const handleAddToBasket = async (productId) => {
@@ -70,7 +75,7 @@ const MenuPage = () => {
   return (
     <div>
       {/* Header */}
-      <Header />
+      <Header  currentBasketCount={basketCount}  />
 
       {/* Navigation Box */}
       <Box sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -80,8 +85,8 @@ const MenuPage = () => {
       {/* Categories and Products */}
       <Container sx={{ marginTop: 2 }}>
         {categories.map((category) => (
-          <Box key={category.id} id={category.name.en}  sx={{ marginBottom: 4 }}>
-            <Typography variant="h4" sx={{    fontSize: {
+          <Box key={category.id} id={category.id}  sx={{ marginBottom: 4 }}>
+            <Typography id={category.name.en} variant="h4" sx={{    fontSize: {
                 xs: '1.5rem', // Small screen
                 sm: '2rem',   // Medium screen
                 md: '3.5rem', // Large screen
@@ -89,8 +94,8 @@ const MenuPage = () => {
               {category.name.en}
             </Typography>
             {(category.name.en === 'Offers')? 
-            <ProductList products={category.products} maxwd={270} maxhi={300} onAddToBasket={handleAddToBasket} />:
-            <ProductList products={category.products} maxwd={200} maxhi={200} onAddToBasket={handleAddToBasket} />
+            <ProductList products={category.products} maxwd={270} maxhi={300}  />:
+            <ProductList products={category.products} maxwd={200} maxhi={200}  />
             }
             
 
