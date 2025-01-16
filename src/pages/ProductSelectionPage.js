@@ -4,7 +4,7 @@ import axios from '../api/axios';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 
-const ProductSelectionPage = ({ onAddToBasket }) => {
+const ProductSelectionPage = () => {
     const { id } = useParams(); // Get product ID from the URL
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,10 +17,11 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [total, setTotal] = useState(0);
 
+
   useEffect(() => {
     const basketItems = JSON.parse(localStorage.getItem('basketItems')) || [];
     setBasketCount(basketItems.length); // Set the basket count to the number of items in the basket
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,11 +39,27 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    if (product && (product.sizes?.length >0) && !selectedSize) {
+      setSelectedSize(product.sizes[0]); // Set default size when the product is loaded
+    }
+  }, [product, selectedSize]);
+  
+  useEffect(() => {
+    if (product && (product.breadTypes?.length >0) && !selectedBread) {
+      setSelectedBread(product.breadTypes[0]); // Set default bread when the product is loaded
+    }
+  }, [product, selectedBread]);
+  
+  useEffect(() => {
+    if (product && (product.combos?.length >0) && !selectedCombo) {
+      setSelectedCombo(product.combos[0]); // Set default combo when the product is loaded
+    }
+  }, [product, selectedCombo]);
+  
   if (loading) {
     return <CircularProgress />;
   }
-
-  
 
   const handleSizeChange = (event, size) => {
     // Remove the previous size price if any
@@ -103,10 +120,10 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
       name:{ en: product.name.en, ar: product.name.ar},
       image: product.image,
       productType: product.productType,
-      size: { en: selectedSize.size.en  , ar: selectedSize.size.ar },
-      breadType: { en: selectedBread.breadType.en, ar: selectedBread.breadType.ar },
-      combo: selectedCombo,
-      comboDrink: selectedDrink,
+      size: { en: (selectedSize? selectedSize.size.en : '')   , ar: (selectedSize? selectedSize.size.ar : '') },
+      breadType: { en: (selectedBread? selectedBread.breadType.en : '' ) , ar: (selectedBread? selectedBread.breadType.ar : '') },
+      combo: (selectedCombo? selectedCombo : null) ,
+      comboDrink: (selectedDrink? selectedDrink : null) ,
       extras: selectedExtras,
       quantity: 1,
       Price: total,
@@ -170,13 +187,13 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
         }}
         >
             {/* Sizes */}
-            {product.sizes && (
+            {product.sizes?.length >0 && (
                 <FormControl>
                 <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >SIZE</Typography>
                 
                 <RadioGroup
                     row
-                    value={selectedSize ? selectedSize.size.en : ( setSelectedSize(product.sizes[0] || '')) }
+                    value={selectedSize ? selectedSize.size.en : '' }
                     onChange={(e) => {
                         const size = product.sizes.find((s) => s.size.en === e.target.value );
                         handleSizeChange(e,size);
@@ -208,12 +225,12 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
     >
 
         {/* Bread Types */}
-        {product.breadTypes && (
+        {product.breadTypes?.length >0 && (
             <FormControl>
             <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Bread</Typography>
             <RadioGroup
                 row
-                value={selectedBread ? selectedBread.breadType.en : ( setSelectedBread(product.breadTypes[0] || '') ) }
+                value={selectedBread ? selectedBread.breadType.en : '' }
                 onChange={(e) => {
                     const bread = product.breadTypes.find((b) => b.breadType.en === e.target.value  );
                     handleBreadChange(e, bread);
@@ -243,12 +260,12 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
         >
 
         {/* Combos */}
-        {product.combos && (
+        {product.combos?.length >0 && (
             <FormControl>
             <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Combo Options</Typography>
             <RadioGroup
                 row
-                value={selectedCombo ? selectedCombo.comboName.en : ( setSelectedCombo( product.combos[0] || '') ) }
+                value={selectedCombo ? selectedCombo.comboName.en : '' }
                 onChange={(e) => {
                     const combo = product.combos.find( (c) => c.comboName.en === e.target.value);
                     handleComboChange(e,combo);
@@ -326,7 +343,7 @@ const ProductSelectionPage = ({ onAddToBasket }) => {
         >
 
         {/* Extras */}
-        {product.extras && (
+        {product.extras?.length >0 && (
             <FormControl>
                 <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center'}} >Extras</Typography>
                 <Grid container spacing={2} sx={{ paddingX: '25%' }} >                

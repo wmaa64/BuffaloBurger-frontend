@@ -18,6 +18,7 @@ import DashboardPage from './pages/DashboardPage';
 import BasketPage from './pages/BasketPage';
 import LandingPage from './pages/LandingPage';
 import MenuPage from './pages/MenuPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/basket" element={<BasketPage  maxwd={200} />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

@@ -4,10 +4,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { useNavigate } from 'react-router-dom';
 
 const BasketPage = ({maxwd}) => {
   const [basketItems, setBasketItems] = useState([]);
   const [basketTotalPrice, setBasketTotalPrice] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const itemsInBasket = JSON.parse(localStorage.getItem('basketItems')) || [];
@@ -176,9 +179,9 @@ const withOutPrice = (str) => {
                 <Typography variant="subtitle2" sx={{ width: '100%' , color: '#ff5f00' , fontWeight: 'bold' }} >
                   {item.name.en}</Typography>
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
-                  {withOutPrice(item.combo.description.en)}</Typography>
+                {item.combo? withOutPrice(item.combo.description.en) : item.combo }</Typography>
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
-                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink) : ''} 
+                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink) : item.comboDrink } 
                 </Typography>
                 
                 {item.extras.map((extra, index) => (
@@ -259,11 +262,12 @@ const withOutPrice = (str) => {
             <Typography variant='body1' sx={{ fontWeight: 'bold' , color: '#ff5f00'}}>EGP {basketTotalPrice.toFixed(2)}</Typography>
         </Box>
         
-          <Button variant="contained" color="primary" title='Place Order' 
+          <Button variant="contained" color="primary" title='CheckOut' 
+            onClick={() => navigate('/checkout')} 
             sx={{ position: 'sticky' , bottom: '0' , width: '100%' , backgroundColor: '#ff5f00' ,
             '&:hover': {backgroundColor: '#ff5f00'}
             }} >
-            Place Order
+            CheckOut
           </Button>
 
 

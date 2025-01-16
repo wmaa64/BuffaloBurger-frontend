@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link  } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, IconButton, Badge } from '@mui/material';
 import AddShoppingCartIcon  from '@mui/icons-material/AddShoppingCart';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Product = ({ product, maxwd, maxhi, onAddProductToBasket }) => {
   const [basketQuantity, setBasketQuantity] = useState(0);
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect( () =>{ 
     const getBasketQuantity = () => {
@@ -24,10 +24,9 @@ const Product = ({ product, maxwd, maxhi, onAddProductToBasket }) => {
 
   },[product._id]);
 
-  const AddBasketQuantity = ()=>{
-    onAddProductToBasket(product._id);
-    setBasketQuantity(prev => prev+1);
-  }
+  const handleAddToBasket = ()=>{
+      navigate(`/product/${product._id}`);
+  };
   
   return (
     <Card sx={{ width: '100%', margin: 'auto' }}>
@@ -43,7 +42,7 @@ const Product = ({ product, maxwd, maxhi, onAddProductToBasket }) => {
         <Typography variant= "subtitle2"   >{product.name.en}</Typography>
         <Typography variant= "subtitle2"   >EGP {product.basePrice}</Typography>
       </CardContent>
-      <IconButton color="primary" onClick={AddBasketQuantity}>
+      <IconButton color="primary" onClick={handleAddToBasket}>
         <Badge 
             badgeContent={basketQuantity} 
             color="secondary" 
