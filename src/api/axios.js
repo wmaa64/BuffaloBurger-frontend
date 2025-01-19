@@ -6,4 +6,5 @@ const axiosInstance = axios.create({
   baseURL: 'https://buffaloburger-backend-production.up.railway.app'
 });
  
+
 export default axiosInstance;
