@@ -120,7 +120,11 @@ const updateQuantity = (productId, newQuantity) => {
 
 const withOutPrice = (str) => {
   const end = str.indexOf("(");
-  return str.substring(0,end);
+  if (end>0){
+    return str.substring(0,end);
+  }else{
+    return str
+  }
 };
 
   return (
@@ -181,11 +185,11 @@ const withOutPrice = (str) => {
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
                 {item.combo? withOutPrice(item.combo.description.en) : item.combo }</Typography>
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
-                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink) : item.comboDrink } 
+                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink.en) : item.comboDrink.en } 
                 </Typography>
                 
                 {item.extras.map((extra, index) => (
-                    <Typography variant="subtitle2" sx={{ width: '100%'  }} >{withOutPrice(extra)}, </Typography>
+                    <Typography key={index} variant="subtitle2" sx={{ width: '100%'  }} >{withOutPrice(extra.extraName.en)}, </Typography>
                 ))}
             </div>
             </Box>

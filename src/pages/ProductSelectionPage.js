@@ -101,6 +101,24 @@ const ProductSelectionPage = () => {
     setSelectedCombo(combo);
   };
 
+  const handleDrinkChange = (event, founDrink) => {
+    // Update selected drink
+    setSelectedDrink(founDrink);
+  };
+
+  const handleExtrasChange = (event, extra) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      // Add to selectedExtras if checked
+      setSelectedExtras((prev) => [...prev, extra]);
+      setTotal((prev) => prev + extra.price);
+    } else {
+      // Remove from selectedExtras if unchecked
+      setSelectedExtras((prev) => prev.filter((extra) => extra.extraName.en !== value));
+      setTotal((prev) => prev - extra.price);
+    }
+  };
+/*
   const handleExtrasChange = (event, extra) => {
     const { value, checked } = event.target;
     if (checked) {
@@ -113,7 +131,7 @@ const ProductSelectionPage = () => {
       setTotal((prev) => prev - extra.price);
     }
   };
-
+*/
   const handleAddToBasket = () => {
     const selectedOptions = {
       productId: product._id,
@@ -312,8 +330,13 @@ const ProductSelectionPage = () => {
                     
                     <RadioGroup
                         row
-                        value={selectedDrink}
-                        onChange={(e) => setSelectedDrink(e.target.value) }
+                        value={selectedDrink ? selectedDrink.en : '' }
+                        onChange={(e) => {
+                        const foundDrink = selectedCombo.drinkOptions.find(option => option.en === e.target.value );
+                        handleDrinkChange(e, foundDrink);
+                    }}
+                        //value={selectedDrink}
+                        //onChange={(e) => setSelectedDrink(e.target.value) }
                     >
                         { selectedCombo.drinkOptions.map((drink, index) => (
                         <FormControlLabel
