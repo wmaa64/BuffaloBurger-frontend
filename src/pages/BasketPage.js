@@ -185,7 +185,7 @@ const withOutPrice = (str) => {
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
                 {item.combo? withOutPrice(item.combo.description.en) : item.combo }</Typography>
                 <Typography variant="subtitle2" sx={{ width: '100%'  }} >
-                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink.en) : item.comboDrink.en } 
+                  {item.size.en}, {item.breadType.en}, {item.comboDrink? withOutPrice(item.comboDrink.en) : '' } 
                 </Typography>
                 
                 {item.extras.map((extra, index) => (
