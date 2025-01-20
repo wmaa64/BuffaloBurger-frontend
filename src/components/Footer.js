@@ -64,7 +64,7 @@ const Footer = () => {
                 xs={12}
                 sm={6}
                 md={2}
-                key={1}
+                key={2}
                 sx={{ textAlign: "left" }}
             >
                 <Link to='/login'   
@@ -99,7 +99,7 @@ const Footer = () => {
                 xs={12}
                 sm={6}
                 md={2}
-                key={1}
+                key={3}
                 sx={{ textAlign: "left" }}
             >
                 <Link to='/login'   
@@ -118,7 +118,7 @@ const Footer = () => {
                 xs={12}
                 sm={6}
                 md={2}
-                key={1}
+                key={4}
                 sx={{ textAlign: "left" }}
             >
                 <Typography 
